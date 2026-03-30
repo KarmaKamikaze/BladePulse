@@ -1,0 +1,11 @@
+## Interface: 11200
+## Title: BladePulse
+## Notes: BladePulse brings your weapon to life with reactive audio feedback tied directly to your strikes.
+## Author: KarmaKamikaze
+## Version: 1.0
+## SavedVariables: BladePulse_DB
+## SavedVariablesPerCharacter: BladePulseUI_IsUIShown
+
+
+BladePulse_core.lua
+BladePulse_ui.lua
