@@ -5,6 +5,7 @@ BladePulse.frame = CreateFrame("Frame")
 
 -- Default settings
 local defaults = {
+    globalEnabled = true,
     parryEnabled = true,
     glancingEnabled = true,
     extraAttackEnabled = true,
@@ -12,6 +13,9 @@ local defaults = {
         parry = "parry.mp3",
         glancing = "glancing.mp3",
         extra_attack = "extra_attack.mp3"
+    },
+    minimap = {
+        angle = 0
     }
 }
 
@@ -57,8 +61,12 @@ end
 function BladePulse:OnEvent(event)
     if event == "VARIABLES_LOADED" then
         self:InitializeDB()
+        self:CreateUI()
+        self.CreateMinimapButton()
         return
     end
+
+    if not BladePulse_DB.globalEnabled then return end
 
     local msg = arg1
     if not msg then return end
@@ -99,7 +107,6 @@ function BladePulse:OnEvent(event)
 
 end
 
--- Sword procs from items and talents (extra attack)
 -- Crits
 -- Flouish wumpwumpwumpwump spin around
 -- crit > 2000: R2D2 whine sound (settable number)
