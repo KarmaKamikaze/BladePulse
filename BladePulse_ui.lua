@@ -20,6 +20,16 @@ function BladePulse:CreateUI()
     BladePulseUI:SetScript("OnDragStop", function() this:StopMovingOrSizing() end)
     BladePulseUI:Hide()
 
+    BladePulseUI.sections = {}
+
+    local function DBEnabled(key)
+        return BladePulse_DB[key] == true
+    end
+
+    local function SetCheckboxState(checkbox, value)
+        checkbox:SetChecked(value == true)
+    end
+
     -- Title
     local title = BladePulseUI:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     title:SetPoint("TOP", 0, -7.5)
@@ -45,15 +55,24 @@ function BladePulse:CreateUI()
     -- Global Enable Checkbox
     local globalCheck = CreateFrame("CheckButton", nil, BladePulseUI, "UICheckButtonTemplate")
     globalCheck:SetPoint("TOPLEFT", BladePulseUI, "TOPLEFT", 15, -70)
-    globalCheck:SetChecked(BladePulse_DB.globalEnabled)
+    globalCheck:SetChecked(DBEnabled("globalEnabled"))
 
     globalCheck:SetScript("OnClick", function()
-        BladePulse_DB.globalEnabled = this:GetChecked()
+        BladePulse_DB.globalEnabled = globalCheck:GetChecked() and true or false
     end)
 
     local globalText = BladePulseUI:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     globalText:SetPoint("LEFT", globalCheck, "RIGHT", 5, 0)
     globalText:SetText("Enable BladePulse")
+
+    -- Refresh UI when opened
+    BladePulseUI:SetScript("OnShow", function()
+        SetCheckboxState(globalCheck, DBEnabled("globalEnabled"))
+
+        for _, section in pairs(BladePulseUI.sections) do
+            SetCheckboxState(section.check, DBEnabled(section.dbKey .. "Enabled"))
+        end
+    end)
 
     --------------------------------------------------
     -- Helper: Create Section
@@ -91,11 +110,10 @@ function BladePulse:CreateUI()
         -- Enable Checkbox
         local check = CreateFrame("CheckButton", nil, section, "UICheckButtonTemplate")
         check:SetPoint("TOPLEFT", content, "TOPLEFT", -5, -20)
-        check:SetChecked(BladePulse_DB and BladePulse_DB[dbKey .. "Enabled"])
+        SetCheckboxState(check, DBEnabled(dbKey .. "Enabled"))
 
         check:SetScript("OnClick", function()
-            local btn = this
-            BladePulse_DB[dbKey .. "Enabled"] = btn:GetChecked()
+            BladePulse_DB[dbKey .. "Enabled"] = check:GetChecked() and true or false
         end)
 
         local checkText = section:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -113,6 +131,11 @@ function BladePulse:CreateUI()
             local sound = BladePulse_DB.sounds[soundKey]
             BladePulse:PlaySound(sound)
         end)
+
+        -- Store reference for refresh
+        section.check = check
+        section.dbKey = dbKey
+        table.insert(BladePulseUI.sections, section)
     end
 
     --------------------------------------------------
@@ -120,14 +143,14 @@ function BladePulse:CreateUI()
     --------------------------------------------------
 
     CreateSection("Extra Attack", -110, "extraAttack", "extra_attack")
-    CreateSection("Parry", -195, "parry", "parry")
+    CreateSection("Enemy Parries You", -195, "parry", "parry")
     CreateSection("Glancing Blow", -280, "glancing", "glancing")
 end
 
 
-    --------------------------------------------------
-    -- Create Minimap Button
-    --------------------------------------------------
+--------------------------------------------------
+-- Create Minimap Button
+--------------------------------------------------
 
 function BladePulse:CreateMinimapButton()
     local button = CreateFrame("Button", "BladePulseMinimapButton", Minimap)

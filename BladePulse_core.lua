@@ -62,7 +62,7 @@ function BladePulse:OnEvent(event)
     if event == "VARIABLES_LOADED" then
         self:InitializeDB()
         self:CreateUI()
-        self.CreateMinimapButton()
+        self:CreateMinimapButton()
         return
     end
 
