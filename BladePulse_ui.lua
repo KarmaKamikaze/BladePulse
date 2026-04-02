@@ -153,7 +153,7 @@ function BladePulse:CreateMinimapButton()
     border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
     border:SetWidth(54)
     border:SetHeight(54)
-    border:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
+    border:SetPoint("TOPLEFT", button, "TOPLEFT", 0, 0)
 
     -- Positioning
     button:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
